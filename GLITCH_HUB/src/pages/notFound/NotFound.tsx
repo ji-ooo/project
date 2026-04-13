@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useThemeStore from "../../store/ThemeStore";
+import useThemeStore from "../../shared/store/ThemeStore";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./NotFound.module.scss";
 import logo from "../../assets/logo.png";

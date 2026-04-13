@@ -9,12 +9,12 @@ function Header() {
   const location = useLocation();
 
   const pageTitles: { [key: string]: string } = {
-    "/": "",
+    "/": "GLITCH HUB",
     "/about": "ABOUT",
     "/glitchrace": "GLITCH RACE",
   };
 
-  const currentPageTitle = pageTitles[location.pathname] || "";
+  const currentPageTitle = pageTitles[location.pathname] || "GLITCH HUB";
 
   return (
     <div className={styles.header}>

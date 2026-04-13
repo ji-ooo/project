@@ -1,0 +1,186 @@
+@use "@/shared/styles/variables" as *;
+
+.setupCard {
+  background: rgba(var(--background-rgb), 0.8);
+  backdrop-filter: blur(10px);
+
+  padding: 2.2rem;
+  border: 2px solid var(--neon-border-color);
+  box-shadow: var(--neon-shadow);
+  border-radius: 15px;
+  z-index: 10;
+  width: 400px;
+  transition: var(--neon-transition);
+
+  .glitchText {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--neon-font-color);
+    text-align: center;
+    text-shadow: var(--neon-shadow);
+    margin-bottom: 1.2rem;
+    letter-spacing: 5px;
+
+    @include neon-flicker-anim(3.5s);
+
+    :global(.light) & {
+      -webkit-text-stroke: 1.5px var(--neon-border-color);
+      @include neon-pulse-anim(2.2s);
+    }
+  }
+}
+
+.stepperContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .rangeLabel {
+    font-size: 1.2rem;
+    color: var(--sub-font-color);
+    letter-spacing: 2px;
+  }
+}
+
+.stepperWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+
+  .stepBtn {
+    width: 45px;
+    height: 45px;
+    background: transparent;
+    border: 2px solid var(--neon-border-color);
+    border-radius: 10px;
+    color: var(--neon-border-color);
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include neon-flicker-anim(3s);
+
+    :global(.light) & {
+      @include neon-pulse-anim(1.5s);
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--neon-border-color);
+      color: #fff;
+      box-shadow: 0 0 15px var(--neon-border-color);
+      transform: translateY(-2px);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      border-color: #666;
+      color: #666;
+      box-shadow: none;
+    }
+  }
+
+  .countDisplay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 80px;
+
+    .countNumber {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--neon-font-color);
+      text-shadow: var(--neon-shadow);
+      transition: var(--neon-transition);
+
+      @include neon-flicker-anim(3s);
+
+      :global(.light) & {
+        -webkit-text-stroke: 2px var(--neon-border-color);
+        @include neon-pulse-anim(1.5s);
+      }
+    }
+
+    .countUnit {
+      font-size: 1.2rem;
+      color: var(--sub-font-color);
+    }
+  }
+}
+
+.nameList {
+  .nameInput {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      background-color: var(--neon);
+      margin-right: 15px;
+      box-shadow: 0 0 10px var(--neon);
+      border-radius: 50%;
+    }
+
+    input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--font-color);
+      padding: 5px;
+      font-size: 1.1rem;
+      outline: none;
+      width: 100%;
+      transition: var(--neon-transition);
+
+      &::placeholder {
+        color: var(--sub-font-color);
+        opacity: 0.5;
+      }
+
+      &:focus {
+        border-bottom-color: var(--neon);
+      }
+    }
+  }
+}
+
+.startButton {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 2rem;
+  background: transparent;
+
+  color: var(--neon-background-color);
+
+  border: 2px solid var(--neon-border-color);
+  border-radius: 15px;
+
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--neon-transition);
+
+  &:hover {
+    background: var(--neon-border-color);
+    color: #fff;
+    box-shadow: 0 0 20px var(--neon-border-color);
+
+    :global(.light) & {
+      // color: #000;
+    }
+  }
+}

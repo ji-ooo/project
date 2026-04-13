@@ -1,3 +1,5 @@
+@forward "animations";
+
 :root {
   --font-color: #1a1a1a;
   --sub-font-color: #636e72;
@@ -5,7 +7,8 @@
   --neon-cyan: #00f3ff;
   --neon-pink: #ff00de;
   --neon-green: #00b894;
-
+  --neon-magenta: #e056fd;
+  --neon-electric-blue: #0984e3;
   --neon-transition: all 0.3s ease;
 }
 
@@ -17,10 +20,13 @@
   --font-color: #1a1a1a;
   --sub-font-color: #636e72;
 
-  --accent-color: #686de0;
+  --main-color: var(--neon-magenta);
 
-  --neon-text-color: var(--neon-greem);
-  --neon-text-shadow: 0 0 2px rgba(72, 52, 212, 0.2);
+  --neon-font-color: #ffffff;
+  --neon-background-color: var(--neon-magenta);
+  --neon-border-color: var(--neon-magenta);
+
+  --neon-shadow: 0 0 2px var(--neon-magenta), 0 0 8px var(--neon-magenta);
 }
 
 .dark {
@@ -32,10 +38,11 @@
   --sub-font-color: #8b949e;
 
   --main-color: var(--neon-cyan);
-  --accent-color: var(--neon-pink);
 
-  --neon-text-color: #ffffff;
-  --neon-text-shadow:
-    0 0 7px #fff, 0 0 10px var(--neon-cyan), 0 0 21px var(--neon-cyan),
-    0 0 42px var(--neon-cyan), 0 0 82px rgba(0, 243, 255, 0.2);
+  --neon-font-color: #ffffff;
+  --neon-border-color: var(--neon-cyan);
+  --neon-background-color: var(--neon-cyan);
+  --neon-shadow:
+    0 0 3px #fff, 0 0 7px var(--neon-cyan), 0 0 16px var(--neon-cyan),
+    0 0 36px var(--neon-cyan), 0 0 82px rgba(0, 243, 255, 0.2);
 }

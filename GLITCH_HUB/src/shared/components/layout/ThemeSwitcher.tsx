@@ -2,7 +2,7 @@ import React from "react";
 import Switch from "@mui/material/Switch";
 import { CiLight, CiDark } from "react-icons/ci";
 import { Box } from "@mui/material";
-import useThemeStore, { Theme } from "../../../store/ThemeStore";
+import useThemeStore, { Theme } from "../../store/ThemeStore";
 
 const ThemeSwitcher = () => {
   const { theme, setTheme } = useThemeStore();

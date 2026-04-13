@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.scss";
 import { Route, Routes, Navigate } from "react-router-dom";
-import useThemeStore from "./store/ThemeStore";
+import useThemeStore from "./shared/store/ThemeStore";
 import Layout from "./shared/components/layout/Layout";
 import Home from "./pages/home/Home";
 import About from "./pages/about/About";
@@ -19,9 +19,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/glitchrace" element={<GlitchRace />} />
+            <Route path="/notfound" element={<NotFound />} />
+            <Route path="*" element={<Navigate to="/notfound" />} />
           </Route>
-          <Route path="/notfound" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/notfound" />} />
         </Routes>
       </div>
     </>

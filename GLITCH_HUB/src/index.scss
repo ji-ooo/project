@@ -8,6 +8,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "GMarketSans";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff")
+    format("woff");
+  font-weight: 900; // 또는 800, 900 등 원하는 두께 수치 지정
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;
