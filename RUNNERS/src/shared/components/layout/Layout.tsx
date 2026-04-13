@@ -1,23 +1,23 @@
 import { useState } from "react";
 import styles from "./Layout.module.scss";
 import { Outlet } from "react-router-dom";
-import NavBar from "./NavBar";
+import Header from "./Header";
 import SideBar from "./SideBar";
 
 function Layout() {
   return (
-    <div>
-      <div className={styles.navBarContainer}>
-        <NavBar />
-      </div>
-      <div className={styles.sideBarContainer}>
+    <div className={styles.layout}>
+      <header className={styles.header}>
+        <Header />
+      </header>
+      <aside className={styles.aside}>
         <SideBar />
-      </div>
-      <div className={styles.mainContainer}>
+      </aside>
+      <main className={styles.main}>
         <main className={styles.outlet}>
           <Outlet />
         </main>
-      </div>
+      </main>
     </div>
   );
 }

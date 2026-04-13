@@ -3,7 +3,7 @@ import styles from "./Home.module.scss";
 
 function Home() {
   return (
-    <div>
+    <div className={styles.home}>
       <h1>Home</h1>
     </div>
   );

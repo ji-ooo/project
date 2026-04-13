@@ -1,14 +1,12 @@
-@import "./shared/styles/variables";
+@use "./shared/styles/variables" as *;
 
-// @font-face {
-//   font-family: 'NanumBarunpen';
-//   src: url('./assets/font/NanumBarunpenR.ttf');
-// }
-
-// @font-face {
-//   font-family: 'GmarketSans';
-//   src: url('./assets/font/GmarketSansTTFMedium.ttf');
-// }
+@font-face {
+  font-family: "GMarketSans";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff")
+    format("woff");
+  font-weight: 500;
+  font-display: swap;
+}
 
 * {
   margin: 0;

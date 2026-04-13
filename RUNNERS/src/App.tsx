@@ -1,12 +1,12 @@
 import { useState } from "react";
 import "./App.scss";
 import { Route, Routes, Navigate } from "react-router-dom";
-import NotFound from "./pages/NotFound/NotFound";
+import useThemeStore from "./store/ThemeStore";
+import Layout from "./shared/components/layout/Layout";
 import Home from "./pages/home/Home";
 import About from "./pages/about/About";
-import Layout from "./shared/components/layout/Layout";
-import useThemeStore from "./store/ThemeStore";
-// import ThemeSwitcher from "./shared/components/layout/ThemeSwitcher";
+import GlitchRace from "./pages/glitchRace/GlitchRace";
+import NotFound from "./pages/notFound/NotFound";
 
 function App() {
   const { theme } = useThemeStore();
@@ -18,6 +18,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/glitchrace" element={<GlitchRace />} />
           </Route>
           <Route path="/notfound" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/notfound" />} />
