@@ -1,0 +1,70 @@
+@import "./shared/styles/variables";
+
+// @font-face {
+//   font-family: 'NanumBarunpen';
+//   src: url('./assets/font/NanumBarunpenR.ttf');
+// }
+
+// @font-face {
+//   font-family: 'GmarketSans';
+//   src: url('./assets/font/GmarketSansTTFMedium.ttf');
+// }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: normal;
+  font-size: inherit;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  background-color: var(--background-color);
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+body * {
+  font-family: "GmarketSans", sans-serif;
+  font-size: 18px;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+  width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+  height: 100%;
+  padding: 0px;
+  position: relative;
+}
+
+strong {
+  color: var(--main-color);
+}
+
+.MuiBox-root {
+  margin-top: 0 !important;
+  overflow: scroll !important;
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+  position: relative;
+}
+
+.MuiToolbar-root {
+  .MuiStack-root {
+    display: none !important;
+  }
+}
