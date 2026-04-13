@@ -1,14 +1,23 @@
 import { useState } from "react";
-import "./Layout.module.scss";
+import styles from "./Layout.module.scss";
 import { Outlet } from "react-router-dom";
 import NavBar from "./NavBar";
-import ThemeSwitcher from "./ThemeSwitcher";
+import SideBar from "./SideBar";
 
 function Layout() {
   return (
     <div>
-      <NavBar />
-      <Outlet />
+      <div className={styles.navBarContainer}>
+        <NavBar />
+      </div>
+      <div className={styles.sideBarContainer}>
+        <SideBar />
+      </div>
+      <div className={styles.mainContainer}>
+        <main className={styles.outlet}>
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
