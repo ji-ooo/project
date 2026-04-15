@@ -104,7 +104,7 @@ const RunnerCanvas: React.FC<Props> = ({ players, isRunning }) => {
         const targetOffset = Math.min(250 + distance * 0.5, 400);
         const targetCameraY = isRunning ? maxY - targetOffset : -100;
 
-        const lerpFactor = 0.03;
+        const lerpFactor = 0.1;
         cameraYRef.current += (targetCameraY - cameraYRef.current) * lerpFactor;
       }
 
@@ -205,15 +205,18 @@ const drawBridges = (
   laneWidth: number,
   cameraY: number,
 ) => {
-  ctx.strokeStyle = "rgba(162, 38, 255, 0.8)";
-  ctx.lineWidth = 4;
-  ctx.shadowBlur = 10;
-  ctx.shadowColor = "#A226FF";
+  ctx.lineWidth = 2;
 
   bridges.forEach((bridge) => {
     const drawY = bridge.floor - cameraY;
     const startX = (bridge.fromPlayer + 1) * laneWidth;
     const endX = (bridge.fromPlayer + 2) * laneWidth;
+
+    const bridgeColor = bridge.color || "#A226FF";
+
+    ctx.strokeStyle = bridgeColor;
+    ctx.shadowColor = bridgeColor;
+    ctx.shadowBlur = 12;
 
     ctx.beginPath();
     ctx.moveTo(startX, drawY);
