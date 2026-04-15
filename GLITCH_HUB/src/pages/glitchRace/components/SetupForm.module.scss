@@ -96,6 +96,29 @@
 }
 
 .nameList {
+  height: 110px;
+  overflow-y: scroll;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--track-color);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--neon-border-color);
+    border-radius: 10px;
+    box-shadow: 0 0 2px var(--neon-border-color);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-border-color);
+  }
+
   .nameInput {
     display: flex;
     align-items: center;
