@@ -6,12 +6,25 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
 
   @media (max-width: 767px) {
     background-color: var(--sidebar-bg);
+    padding-right: 80px;
+    justify-content: center;
+  }
+
+  .shift {
+    width: 0px;
+    transition: all 0.3s ease;
+
+    @media (min-width: 768px) {
+      &Open {
+        width: 180px;
+      }
+    }
   }
 
   .logo {
@@ -19,28 +32,10 @@
     cursor: pointer;
     z-index: 10;
     transition: all 0.3s ease;
-    --move-x: 0px;
-    transform: translateX(var(--move-x));
-
-    &Shift {
-      --move-x: 180px;
-    }
 
     @include button-interaction {
       filter: brightness(1.2) drop-shadow(0 0 10px var(--neon-cyan));
-      transform: translateX(var(--move-x)) scale(1.05);
-    }
-
-    @media (max-width: 768px) {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      transition: none;
-      --move-x: 0px;
-
-      @include button-interaction {
-        transform: translateX(-50%) scale(1.05);
-      }
+      transform: scale(1.05);
     }
   }
 

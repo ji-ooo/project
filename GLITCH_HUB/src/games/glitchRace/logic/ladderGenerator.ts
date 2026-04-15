@@ -1,4 +1,4 @@
-import type { Runner } from "../types";
+import type { Bridge } from "../types";
 
 export const RACE_CONFIG = {
   WARMUP_TIME: 3000,
@@ -6,26 +6,23 @@ export const RACE_CONFIG = {
   SAFE_ZONE_HEIGHT: 500, // 3초간 내려가는 거리
 };
 
-export const updateVerticalRace = (
-  runners: Runner[],
-  elapsed: number,
-  laneWidth: number,
-) => {
-  const isGlitchMode = elapsed > RACE_CONFIG.WARMUP_TIME;
+export const generateLadders = (
+  laneCount: number,
+  totalHeight: number,
+): Bridge[] => {
+  const bridges: Bridge[] = [];
+  const spacing = 150;
+  const startY = 600;
 
-  return runners.map((runner) => {
-    // 1. 아래로 전진
-    const nextY = runner.y + runner.speed;
+  for (let y = startY; y < totalHeight; y += spacing) {
+    const fromPlayer = Math.floor(Math.random() * (laneCount - 1));
 
-    // 2. 가로 이동 (레인 변경 시 부드럽게)
-    const xDiff = runner.targetX - runner.x;
-    const nextX = runner.x + xDiff * 0.15;
+    bridges.push({
+      id: `bridge-${y}-${fromPlayer}`,
+      floor: y,
+      fromPlayer: fromPlayer,
+    });
+  }
 
-    // 3. 3초 후 이벤트 발생
-    if (isGlitchMode) {
-      // TODO: 가로줄(사다리)을 만나면 runner.targetX를 옆 레인으로 변경
-    }
-
-    return { ...runner, x: nextX, y: nextY };
-  });
+  return bridges;
 };

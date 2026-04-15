@@ -6,7 +6,7 @@ interface Props {
 }
 
 const CountDown = ({ onComplete }: Props) => {
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(1);
 
   useEffect(() => {
     if (count === 0) {
