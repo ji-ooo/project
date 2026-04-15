@@ -1,3 +1,5 @@
+@use "@/shared/styles/variables" as *;
+
 .sideBar {
   position: fixed;
   left: -180px;
@@ -5,9 +7,10 @@
   height: 100vh;
   z-index: 1100;
 
-  background-color: var(--background-color);
-  filter: brightness(0.84);
+  background-color: var(--sidebar-bg);
   border-right: 1px solid var(--border-color);
+
+  backdrop-filter: blur(10px);
 
   display: flex;
   transition: left 0.3s ease;
@@ -25,10 +28,12 @@
     justify-content: flex-start;
     padding-top: 80px;
     opacity: 0;
-    transition: opacity 1.7s ease;
+    transition: opacity 1.3s ease;
+    pointer-events: none;
 
     &.open {
       opacity: 1;
+      pointer-events: auto;
     }
 
     .aboutButton {
@@ -38,7 +43,7 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background-color: var(--background-color);
+      background-color: var(--sidebar-bg);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -46,31 +51,32 @@
       color: var(--text-color);
       transition: filter 0.2s ease;
 
-      &:hover {
-        filter: brightness(0.9);
+      @include button-interaction {
+        filter: brightness(0.84);
       }
     }
 
     li {
       width: 90%;
+      margin: 0.5rem 0px;
       list-style: none;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
       border-radius: 50px;
-      background-color: var(--background-color);
+      background-color: var(--sidebar-bg);
       cursor: pointer;
 
       transition: filter 0.2s ease;
 
-      &:hover {
+      @include button-interaction {
         filter: brightness(0.84);
       }
     }
 
     a {
-      padding: 20px 20px;
+      padding: 15px 20px;
       text-decoration: none;
       color: var(--text-color);
     }
@@ -90,6 +96,39 @@
       font-size: 16px;
     }
   }
+
+  > :last-child {
+    @media (min-width: 768px) {
+      display: none;
+    }
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  @media (max-width: 767px) {
+    left: -100%;
+    width: 100%;
+    border-right: none;
+    backdrop-filter: blur(15px);
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    .menuContent {
+      padding-top: 100px;
+
+      li {
+        width: 85%;
+        margin: 0.8rem, 0;
+
+        a {
+          padding: 20px;
+          font-size: 1.1rem;
+          text-align: center;
+        }
+      }
+    }
+  }
 }
 
 .toggleButton {
@@ -104,8 +143,9 @@
   align-items: center;
   justify-content: center;
 
-  background-color: var(--background-color);
-  filter: brightness(0.84);
+  background-color: var(--sidebar-bg);
+  backdrop-filter: blur(10px);
+
   border: none;
   border-radius: 40%;
   cursor: pointer;
@@ -115,11 +155,11 @@
     left 0.3s ease,
     filter 0.2s ease;
 
-  &:hover {
+  @include button-interaction {
     filter: brightness(0.75);
   }
 
-  // &.open {
-  //   left: 0;
-  // }
+  @media (max-width: 767px) {
+    top: 5px;
+  }
 }

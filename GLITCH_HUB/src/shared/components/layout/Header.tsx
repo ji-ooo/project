@@ -1,12 +1,13 @@
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
+import { useSideBarStore } from "../../store/SideBarStore";
 import ThemeSwitcher from "./ThemeSwitcher";
 import logo from "../../../assets/logo.png";
 
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isOpen } = useSideBarStore();
 
   const pageTitles: { [key: string]: string } = {
     "/": "GLITCH HUB",
@@ -21,7 +22,7 @@ function Header() {
       <img
         src={logo}
         alt="Logo"
-        className={styles.logo}
+        className={`${styles.logo} ${isOpen ? styles.logoShift : ""}`}
         onClick={() => navigate("/")}
       />
       <div className={styles.pageTitle}>{currentPageTitle}</div>

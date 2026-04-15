@@ -27,11 +27,37 @@
   }
 }
 
-@mixin neon-flicker-anim($duration: 3s) {
+@mixin neon-theme-anim($flicker-dur: 3s, $pulse-dur: 2s) {
   --current-shadow: var(--neon-shadow);
-  animation: neon-flicker $duration infinite;
+  animation: neon-flicker $flicker-dur infinite;
+
+  :global(.light) & {
+    animation: neon-pulse $pulse-dur infinite alternate;
+    -webkit-text-stroke: 1.5px var(--neon-border-color);
+  }
 }
 
-@mixin neon-pulse-anim($duration: 2s) {
-  animation: neon-pulse $duration infinite alternate;
+@mixin button-interaction {
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      @content;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+    filter: brightness(1.2);
+    transition: transform 0.1s ease;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: #666 !important;
+    color: #666 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
 }

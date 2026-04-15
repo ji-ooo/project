@@ -15,14 +15,28 @@
     cursor: pointer;
     z-index: 10;
     transition: all 0.3s ease;
+    --move-x: 0px;
+    transform: translateX(var(--move-x));
 
-    &:hover {
-      filter: brightness(1.2) drop-shadow(0 0 10px var(--neon-cyan));
-      transform: scale(1.05);
+    &Shift {
+      --move-x: 180px;
     }
 
-    :global(.light) & {
-      filter: saturate(1.5);
+    @include button-interaction {
+      filter: brightness(1.2) drop-shadow(0 0 10px var(--neon-cyan));
+      transform: translateX(var(--move-x)) scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: none;
+      --move-x: 0px;
+
+      @include button-interaction {
+        transform: translateX(-50%) scale(1.05);
+      }
     }
   }
 
@@ -40,16 +54,19 @@
     color: var(--neon-font-color);
     text-shadow: var(--neon-shadow);
 
-    @include neon-flicker-anim(3s);
+    @include neon-theme-anim(2s, 3s);
 
-    :global(.light) & {
-      -webkit-text-stroke: 1.5px var(--neon-border-color);
-      @include neon-pulse-anim(2s);
+    @media (max-width: 768px) {
+      display: none;
     }
   }
 
   > :last-child {
     position: absolute;
     right: 15px;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 }

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import styles from "./SideBar.module.scss";
+import ThemeSwitcher from "./ThemeSwitcher";
 import useThemeStore from "../../store/ThemeStore";
+import { useSideBarStore } from "../../store/SideBarStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import HouseSidingIcon from "@mui/icons-material/HouseSiding";
 import InfoIcon from "@mui/icons-material/Info";
@@ -9,15 +10,11 @@ import SportsScoreIcon from "@mui/icons-material/SportsScore";
 
 function SideBar() {
   const { theme } = useThemeStore();
-  const [isOpen, setIsOpen] = useState(false);
-  const sideBarRef = useRef<HTMLDivElement>(null);
+  const { isOpen, toggle } = useSideBarStore();
 
   return (
     <>
-      <div
-        ref={sideBarRef}
-        className={`${styles.sideBar} ${isOpen ? styles.open : ""}`}
-      >
+      <div className={`${styles.sideBar} ${isOpen ? styles.open : ""}`}>
         <nav className={`${styles.menuContent} ${isOpen ? styles.open : ""}`}>
           <a href="/about" className={styles.aboutButton}>
             {theme === "light" ? <InfoOutlinedIcon /> : <InfoIcon />}
@@ -41,10 +38,11 @@ function SideBar() {
             </a>
           </li>
         </nav>
+        <ThemeSwitcher />
       </div>
       <button
         className={`${styles.toggleButton} ${isOpen ? styles.open : ""}`}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggle}
       >
         <MenuIcon />
       </button>

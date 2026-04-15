@@ -14,9 +14,7 @@ function Layout() {
         <SideBar />
       </aside>
       <main className={styles.main}>
-        <main className={styles.outlet}>
-          <Outlet />
-        </main>
+        <Outlet />
       </main>
     </div>
   );
