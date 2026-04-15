@@ -10,6 +10,10 @@
   background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
 
+  @media (max-width: 767px) {
+    background-color: var(--sidebar-bg);
+  }
+
   .logo {
     height: 70px;
     cursor: pointer;

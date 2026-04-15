@@ -7,10 +7,21 @@ import HouseSidingIcon from "@mui/icons-material/HouseSiding";
 import InfoIcon from "@mui/icons-material/Info";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SportsScoreIcon from "@mui/icons-material/SportsScore";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 function SideBar() {
   const { theme } = useThemeStore();
-  const { isOpen, toggle } = useSideBarStore();
+  const { isOpen, setIsOpen, toggle } = useSideBarStore();
+  const location = useLocation();
+
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile && isOpen) {
+      setIsOpen(false);
+    }
+  }, [location.pathname, setIsOpen]);
 
   return (
     <>
