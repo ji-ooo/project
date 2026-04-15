@@ -1,18 +1,10 @@
 import { useState } from "react";
+import { NEON_COLORS } from "../../../games/glitchRace/types";
 import styles from "./SetupForm.module.scss";
 
 interface Props {
   onStart: (players: any[]) => void;
 }
-
-const NEON_COLORS = [
-  "#00f3ff",
-  "#ff00de",
-  "#39ff14",
-  "#ffea00",
-  "#ff4d00",
-  "#bd00ff",
-];
 
 const SetupForm = ({ onStart }: Props) => {
   const [count, setCount] = useState(2);
@@ -25,12 +17,6 @@ const SetupForm = ({ onStart }: Props) => {
         .fill("")
         .map((_, i) => names[i] || ""),
     );
-  };
-
-  const handleNameChange = (index: number, val: string) => {
-    const newNames = [...names];
-    newNames[index] = val;
-    setNames(newNames);
   };
 
   const handleSubmit = () => {
@@ -50,7 +36,6 @@ const SetupForm = ({ onStart }: Props) => {
       <h1 className={styles.glitchText} data-text="GAME SETUP">
         인원 설정
       </h1>
-
       <div className={styles.stepperContainer}>
         <div className={styles.stepperWrapper}>
           <button
@@ -84,9 +69,13 @@ const SetupForm = ({ onStart }: Props) => {
           >
             <span className={styles.dot} />
             <input
-              placeholder={`PLAYER ${i + 1} NAME`}
               value={name}
-              onChange={(e) => handleNameChange(i, e.target.value)}
+              placeholder={`PLAYER ${i + 1} NAME`}
+              onChange={(e) => {
+                const n = [...names];
+                n[i] = e.target.value;
+                setNames(n);
+              }}
             />
           </div>
         ))}

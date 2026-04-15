@@ -1,0 +1,34 @@
+export const NEON_COLORS = [
+  "#00f3ff",
+  "#ff00de",
+  "#39ff14",
+  "#ffea00",
+  "#ff4d00",
+  "#bd00ff",
+];
+
+export interface Bridge {
+  id: string;
+  floor: number; // Y축 (층수)
+  fromPlayer: number; // X축 (어느 기둥에서 시작하는지)
+}
+
+export interface Player {
+  id: number;
+  name: string;
+  color: string;
+}
+
+export interface Runner {
+  id: string;
+  name: string;
+  lane: number;
+  x: number;
+  targetX: number;
+  y: number;
+  speed: number;
+  status: "RUNNING" | "GLITCH" | "FALLEN";
+  color: string; // 필수 값
+}
+
+export type GameState = "SETUP" | "PLAYING" | "FINISHED";

@@ -2,14 +2,8 @@ import React, { useState } from "react";
 import styles from "./GlitchRace.module.scss";
 import SetupForm from "./components/SetupForm.tsx";
 import CountDown from "./components/CountDown.tsx";
-
-export type GameState = "SETUP" | "PLAYING" | "RESULT";
-
-export interface Player {
-  id: number;
-  name: string;
-  color: string;
-}
+import RunnerCanvas from "./components/RunnerCanvas.tsx";
+import type { Player, GameState } from "../../games/glitchRace/types";
 
 const GlitchRacePage = () => {
   const [gameState, setGameState] = useState<GameState>("SETUP");
@@ -23,8 +17,7 @@ const GlitchRacePage = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.test} />
+    <div className={styles.gameContainer}>
       {gameState === "SETUP" && <SetupForm onStart={handleStartGame} />}
 
       {gameState === "PLAYING" && (
@@ -32,8 +25,7 @@ const GlitchRacePage = () => {
           {isCounting && <CountDown onComplete={() => setIsCounting(false)} />}
 
           <div className={styles.canvasWrapper}>
-            {/* 여기에 나중에 만들 <RunnerCanvas isRunning={!isCounting} /> 가 들어갑니다 */}
-            {!isCounting && <p>RACE START!!</p>}
+            <RunnerCanvas players={players} isRunning={!isCounting} />
           </div>
         </div>
       )}
