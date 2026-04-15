@@ -44,7 +44,6 @@ const SetupForm = ({ onStart }: Props) => {
 
   const MIN = 2;
   const MAX = 6;
-  const percentage = ((count - MIN) / (MAX - MIN)) * 100;
 
   return (
     <div className={styles.setupCard}>
@@ -71,7 +70,7 @@ const SetupForm = ({ onStart }: Props) => {
             onClick={() => handleCountChange(Math.min(count + 1, MAX))}
             disabled={count >= MAX}
           >
-            +
+            <span>+</span>
           </button>
         </div>
       </div>

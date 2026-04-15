@@ -24,6 +24,7 @@ const GlitchRacePage = () => {
 
   return (
     <div className={styles.container}>
+      <div className={styles.test} />
       {gameState === "SETUP" && <SetupForm onStart={handleStartGame} />}
 
       {gameState === "PLAYING" && (
