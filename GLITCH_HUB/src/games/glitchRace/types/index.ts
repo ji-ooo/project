@@ -21,7 +21,6 @@ export interface Bridge {
   floor: number; // Y축 (층수)
   fromPlayer: number; // X축 (어느 기둥에서 시작하는지)
   color: string;
-  isUsed?: boolean; // 누군가 이미 건넜는지 여부
 }
 
 export interface Player {
@@ -34,13 +33,12 @@ export interface Runner {
   id: string;
   name: string;
   lane: number;
-  visualLane?: number;
-  x: number;
-  targetX: number;
+  visualLane: number;
   y: number;
   speed: number;
   status: "RUNNING" | "GLITCH" | "FALLEN";
-  color: string; // 필수 값
+  color: string;
+  lastBridgeId: string | null;
 }
 
 export type GameState = "SETUP" | "PLAYING" | "FINISHED";

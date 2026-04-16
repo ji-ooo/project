@@ -6,7 +6,6 @@ import {
 } from "../../../games/glitchRace/logic/ladderGenerator";
 import { updateVerticalRace } from "../../../games/glitchRace/logic/raceEngine";
 import styles from "./RunnerCanvas.module.scss";
-import { alpha } from "@mui/material";
 
 interface Props {
   players: Player[];
@@ -18,66 +17,57 @@ export const TRACK_SETTING = {
   LANE_WIDTH: 40,
   STRAIGHT_RATIO: 0.5,
   STROKE_WIDTH: 2,
+  DEFAULT_ZOOM: 1.5,
+  MIN_ZOOM: 1.0,
+  MAX_ZOOM: 2.2,
+  CAMERA_LERP: 0.08,
 };
 
 const RunnerCanvas: React.FC<Props> = ({ players, isRunning }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [runners, setRunners] = useState<Runner[]>([]);
+  // 렌더링 트리거를 위한 최소한의 state
+  const [, setTick] = useState(0);
   const [bridges, setBridges] = useState<Bridge[]>([]);
-  const startTimeRef = useRef<number | null>(null);
-  const cameraYRef = useRef<number>(-100);
-  const { LANE_WIDTH } = TRACK_SETTING;
+  const [zoom, setZoom] = useState(TRACK_SETTING.DEFAULT_ZOOM);
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cameraPosRef = useRef({ x: 0, y: 0 });
+  const runnersRef = useRef<Runner[]>([]);
+
+  // 1. 캔버스 사이즈 최적화 (ResizeObserver 하나로 관리)
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas?.parentElement) return;
 
-    const updateSize = () => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      canvas.width = width;
+      canvas.height = height;
+    });
 
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
+    observer.observe(canvas.parentElement);
+    return () => observer.disconnect();
+  }, []);
 
-      const laneWidth = canvas.width / (players.length + 1);
-      setRunners((prev) =>
-        prev.map((r, i) => ({
-          ...r,
-          x: (r.lane + 1) * laneWidth,
-          targetX: (r.lane + 1) * laneWidth,
-        })),
-      );
-    };
-
-    updateSize();
-
-    const resizeObserver = new ResizeObserver(() => updateSize());
-    resizeObserver.observe(canvas.parentElement!);
-
-    return () => resizeObserver.disconnect();
-  }, [players.length]); // 플레이어 수가 바뀔 때도 재계산
-
+  // 2. 초기 데이터 셋업
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
     const initialRunners: Runner[] = players.map((p, i) => ({
-      ...p,
       id: String(p.id),
+      name: p.name,
       lane: i,
-      x: (i + 1) * LANE_WIDTH,
-      targetX: (i + 1) * LANE_WIDTH,
+      visualLane: i,
       y: 0,
-      speed: RACE_CONFIG.BASE_SPEED + Math.random() * 0.23,
+      speed: RACE_CONFIG.BASE_SPEED,
       status: "RUNNING",
+      color: p.color,
+      lastBridgeId: null,
     }));
-    setRunners(initialRunners);
 
+    runnersRef.current = initialRunners;
     const newLadders = generateLadders(players.length, 5000);
     setBridges(newLadders);
-    startTimeRef.current = null;
   }, [players]);
 
+  // 3. 메인 게임 루프 (Ref 중심)
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
@@ -85,56 +75,103 @@ const RunnerCanvas: React.FC<Props> = ({ players, isRunning }) => {
 
     let frameId: number;
 
-    const render = (time: number) => {
-      if (isRunning) {
-        if (!startTimeRef.current) startTimeRef.current = time;
-        const elapsed = time - startTimeRef.current;
+    const render = () => {
+      if (isRunning && runnersRef.current.length > 0) {
+        // [물리 엔진]
+        const nextRunners = updateVerticalRace(runnersRef.current, bridges);
+        runnersRef.current = nextRunners;
 
-        setRunners((prev) =>
-          updateVerticalRace(prev, elapsed, LANE_WIDTH, bridges),
+        // [카메라 & 줌 계산]
+        const leader = nextRunners.reduce((prev, curr) =>
+          prev.y > curr.y ? prev : curr,
         );
+        const tail = nextRunners.reduce((prev, curr) =>
+          prev.y < curr.y ? prev : curr,
+        );
+        const distance = leader.y - tail.y;
+
+        const leaderPos = getTrackPos(
+          leader.y,
+          leader.visualLane ?? leader.lane,
+          canvas,
+        );
+        const targetZoom =
+          TRACK_SETTING.MAX_ZOOM -
+          (Math.min(1000, Math.max(0, distance - 500)) / 1000) *
+            (TRACK_SETTING.MAX_ZOOM - TRACK_SETTING.MIN_ZOOM);
+
+        const lerp = TRACK_SETTING.CAMERA_LERP;
+        cameraPosRef.current.x += (leaderPos.x - cameraPosRef.current.x) * lerp;
+        cameraPosRef.current.y += (leaderPos.y - cameraPosRef.current.y) * lerp;
+
+        const nextZoom = zoom + (targetZoom - zoom) * lerp;
+        setZoom(nextZoom);
+
+        // [그리기]
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.scale(nextZoom, nextZoom);
+        ctx.translate(-cameraPosRef.current.x, -cameraPosRef.current.y);
+
+        drawTracks(ctx, canvas, players.length);
+        drawBridges(ctx, bridges, canvas, leader.y, tail.y);
+        nextRunners.forEach((r) => drawRunner(ctx, r));
+
+        ctx.restore();
+
+        // 리액트 외부의 물리 변화를 반영하기 위해 강제 틱 발생 (필요 시)
+        setTick((t) => t + 1);
       }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (runners.length > 0) {
-        const maxY = Math.max(...runners.map((r) => r.y));
-        const minY = Math.min(...runners.map((r) => r.y));
-        const distance = maxY - minY; // 주자 간 간격
-
-        const targetOffset = Math.min(250 + distance * 0.5, 400);
-        const targetCameraY = isRunning ? maxY - targetOffset : -100;
-
-        const lerpFactor = 0.1;
-        cameraYRef.current += (targetCameraY - cameraYRef.current) * lerpFactor;
-      }
-
-      // const currentCameraY = cameraYRef.current;
-
-      drawTracks(ctx, canvas, players.length);
-      drawBridges(ctx, bridges, players.length, canvas, runners);
-
-      runners.forEach((r) => {
-        drawRunner(ctx, r);
-      });
-
       frameId = requestAnimationFrame(render);
     };
 
     frameId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(frameId);
-  }, [isRunning, players.length, runners, bridges]);
+  }, [isRunning, bridges, players.length, zoom]);
 
   return (
     <div className={styles.canvasContainer}>
-      <canvas
-        ref={canvasRef}
-        width={1000}
-        height={500}
-        className={styles.raceCanvas}
-      />
+      <canvas ref={canvasRef} className={styles.raceCanvas} />
     </div>
   );
+};
+
+// --- Helper Functions (최적화) ---
+
+const getTrackPos = (dist: number, lane: number, canvas: HTMLCanvasElement) => {
+  const { BASE_RADIUS, LANE_WIDTH, STRAIGHT_RATIO } = TRACK_SETTING;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const STRAIGHT_LEN = canvas.width * STRAIGHT_RATIO;
+  const laneRadius = BASE_RADIUS + lane * LANE_WIDTH;
+
+  const SEMI_CIRCLE_LEN = Math.PI * BASE_RADIUS;
+  const TOTAL_LAP = STRAIGHT_LEN * 2 + SEMI_CIRCLE_LEN * 2;
+
+  const d = dist % TOTAL_LAP;
+  const startX = centerX - STRAIGHT_LEN / 2;
+  const endX = centerX + STRAIGHT_LEN / 2;
+
+  if (d < STRAIGHT_LEN) {
+    return { x: startX + d, y: centerY - laneRadius };
+  } else if (d < STRAIGHT_LEN + SEMI_CIRCLE_LEN) {
+    const angle = (d - STRAIGHT_LEN) / BASE_RADIUS - Math.PI / 2;
+    return {
+      x: endX + Math.cos(angle) * laneRadius,
+      y: centerY + Math.sin(angle) * laneRadius,
+    };
+  } else if (d < STRAIGHT_LEN * 2 + SEMI_CIRCLE_LEN) {
+    const dOnBottom = d - STRAIGHT_LEN - SEMI_CIRCLE_LEN;
+    return { x: endX - dOnBottom, y: centerY + laneRadius };
+  } else {
+    const angle =
+      (d - STRAIGHT_LEN * 2 - SEMI_CIRCLE_LEN) / BASE_RADIUS + Math.PI / 2;
+    return {
+      x: startX + Math.cos(angle) * laneRadius,
+      y: centerY + Math.sin(angle) * laneRadius,
+    };
+  }
 };
 
 const drawTracks = (
@@ -147,230 +184,87 @@ const drawTracks = (
   const centerY = canvas.height / 2;
   const STRAIGHT_LEN = canvas.width * STRAIGHT_RATIO;
 
-  ctx.strokeStyle = "rgba(162, 38, 255, 0.3)";
+  ctx.strokeStyle = "rgba(162, 38, 255, 0.2)";
   ctx.lineWidth = 2;
-  ctx.shadowBlur = 10;
-  ctx.shadowColor = "#A226FF";
 
   for (let i = 0; i < count; i++) {
-    const landRadius = BASE_RADIUS + i * LANE_WIDTH;
+    const r = BASE_RADIUS + i * LANE_WIDTH;
     const startX = centerX - STRAIGHT_LEN / 2;
     const endX = centerX + STRAIGHT_LEN / 2;
 
     ctx.beginPath();
-
-    ctx.moveTo(startX, centerY - landRadius);
-    ctx.lineTo(endX, centerY - landRadius);
-
-    ctx.arc(endX, centerY, landRadius, -Math.PI / 2, Math.PI / 2, false);
-
-    ctx.lineTo(startX, centerY + landRadius);
-
-    ctx.arc(startX, centerY, landRadius, Math.PI / 2, -Math.PI / 2, false);
-
+    ctx.moveTo(startX, centerY - r);
+    ctx.lineTo(endX, centerY - r);
+    ctx.arc(endX, centerY, r, -Math.PI / 2, Math.PI / 2, false);
+    ctx.lineTo(startX, centerY + r);
+    ctx.arc(startX, centerY, r, Math.PI / 2, -Math.PI / 2, false);
     ctx.closePath();
     ctx.stroke();
-  }
-  ctx.shadowBlur = 0;
-};
-
-const getTrackPos = (
-  dist: number,
-  lane: number,
-  laneCount: number,
-  canvas: HTMLCanvasElement,
-) => {
-  const { BASE_RADIUS, LANE_WIDTH, STRAIGHT_RATIO } = TRACK_SETTING;
-
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const STRAIGHT_LEN = canvas.width * STRAIGHT_RATIO;
-
-  // ★ 핵심: 모든 레인이 동일한 '각도'와 '진행도'를 갖도록 기준 길이를 고정합니다.
-  // 실제 반지름은 lane마다 다르지만, 거리 계산용 반지름은 하나로 통일합니다.
-  const REFERENCE_RADIUS = BASE_RADIUS;
-  const laneRadius = BASE_RADIUS + lane * LANE_WIDTH; // 실제 그릴 위치의 반지름
-
-  const SEMI_CIRCLE_LEN = Math.PI * REFERENCE_RADIUS;
-  const TOTAL_LAP = STRAIGHT_LEN * 2 + SEMI_CIRCLE_LEN * 2;
-
-  const d = dist % TOTAL_LAP;
-  const startX = centerX - STRAIGHT_LEN / 2;
-  const endX = centerX + STRAIGHT_LEN / 2;
-
-  // 1. 상단 직선
-  if (d < STRAIGHT_LEN) {
-    return { x: startX + d, y: centerY - laneRadius };
-  }
-  // 2. 우측 곡선
-  else if (d < STRAIGHT_LEN + SEMI_CIRCLE_LEN) {
-    // 거리를 REFERENCE_RADIUS로 나누어 '각도'를 먼저 구합니다.
-    const angle = (d - STRAIGHT_LEN) / REFERENCE_RADIUS - Math.PI / 2;
-    // 그 각도에 '실제 laneRadius'를 곱해서 좌표를 찍습니다.
-    return {
-      x: endX + Math.cos(angle) * laneRadius,
-      y: centerY + Math.sin(angle) * laneRadius,
-    };
-  }
-  // 3. 하단 직선
-  else if (d < STRAIGHT_LEN * 2 + SEMI_CIRCLE_LEN) {
-    const dOnBottom = d - STRAIGHT_LEN - SEMI_CIRCLE_LEN;
-    return { x: endX - dOnBottom, y: centerY + laneRadius };
-  }
-  // 4. 좌측 곡선
-  else {
-    const angle =
-      (d - STRAIGHT_LEN * 2 - SEMI_CIRCLE_LEN) / REFERENCE_RADIUS + Math.PI / 2;
-    return {
-      x: startX + Math.cos(angle) * laneRadius,
-      y: centerY + Math.sin(angle) * laneRadius,
-    };
   }
 };
 
 const drawRunner = (ctx: CanvasRenderingContext2D, r: Runner) => {
-  const displayLane = r.visualLane !== undefined ? r.visualLane : r.lane;
-  const { x, y } = getTrackPos(r.y, displayLane, 0, ctx.canvas);
+  const { x, y } = getTrackPos(r.y, r.visualLane ?? r.lane, ctx.canvas);
 
-  ctx.fillStyle = r.color;
-  ctx.shadowBlur = 10;
+  // 1. 공 그리기 (네온 효과 강조)
+  ctx.save();
+  ctx.shadowBlur = 15;
   ctx.shadowColor = r.color;
+  ctx.fillStyle = r.color;
   ctx.beginPath();
-  ctx.arc(x, y, 15, 0, Math.PI * 2);
+  ctx.arc(x, y, 12, 0, Math.PI * 2);
   ctx.fill();
+  ctx.restore();
 
-  ctx.shadowBlur = 0;
-  ctx.font = "bold 15px Pretendard, Arial";
+  // 2. 이름표 최적화 (공 아래로 이동 + 배경 간소화)
+  ctx.font = "bold 12px Pretendard, Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  const textMetrics = ctx.measureText(r.name);
-  const paddingH = 10;
-  const rectWidth = textMetrics.width + paddingH * 2;
-  const rectHeight = 22;
-  const rectX = x - rectWidth / 2;
-  const rectY = y - 33 - rectHeight / 2;
+  const nameY = y + 25; // 공 아래쪽으로 위치 변경 (위쪽 가림 현상 방지)
+  const textWidth = ctx.measureText(r.name).width;
+  const padding = 6;
 
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-  ctx.beginPath();
+  // 이름표 배경 (더 투명하게)
+  ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+  const rectW = textWidth + padding * 2;
+  const rectH = 18;
 
   if (ctx.roundRect) {
-    ctx.roundRect(rectX, rectY, rectWidth, rectHeight, 6);
-  } else {
-    ctx.rect(rectX, rectY, rectWidth, rectHeight);
+    ctx.beginPath();
+    ctx.roundRect(x - rectW / 2, nameY - rectH / 2, rectW, rectH, 4);
+    ctx.fill();
   }
-  ctx.fill();
 
+  // 이름 텍스트
   ctx.fillStyle = "#FFFFFF";
-  ctx.fillText(r.name, x, y - 33);
+  ctx.fillText(r.name, x, nameY);
 };
-
-// const drawBridges = (
-//   ctx: CanvasRenderingContext2D,
-//   bridges: Bridge[],
-//   laneCount: number,
-//   canvas: HTMLCanvasElement,
-//   runners: Runner[],
-// ) => {
-//   if (runners.length === 0) return;
-
-//   ctx.lineWidth = 3;
-
-//   const leaderY = Math.max(...runners.map((r) => r.y));
-//   const VISIBLE_DISTANCE = 1000;
-//   const FULL_VISIBLE_DISTANCE = 300;
-
-//   bridges.forEach((bridge) => {
-//     const distanceToBridge = bridge.floor - leaderY;
-
-//     if (distanceToBridge > VISIBLE_DISTANCE || distanceToBridge < -200) return;
-
-//     let alpha =
-//       1 -
-//       (distanceToBridge - FULL_VISIBLE_DISTANCE) /
-//         (VISIBLE_DISTANCE - FULL_VISIBLE_DISTANCE);
-//     alpha = Math.max(0, Math.min(1, alpha));
-
-//     const startPos = getTrackPos(
-//       bridge.floor,
-//       bridge.fromPlayer,
-//       laneCount,
-//       canvas,
-//     );
-//     const endPos = getTrackPos(
-//       bridge.floor,
-//       bridge.fromPlayer + 1,
-//       laneCount,
-//       canvas,
-//     );
-
-//     const bridgeColor = bridge.color || "#A226FF";
-
-//     ctx.globalAlpha = alpha;
-//     ctx.strokeStyle = bridgeColor;
-//     ctx.shadowColor = bridgeColor;
-//     ctx.shadowBlur = 12 * alpha; // 멀리 있을 땐 네온 효과도 약하게
-
-//     ctx.beginPath();
-//     ctx.moveTo(startPos.x, startPos.y);
-//     ctx.lineTo(endPos.x, endPos.y);
-//     ctx.stroke();
-//   });
-
-//   ctx.globalAlpha = 1.0;
-//   ctx.shadowBlur = 0;
-// };
 
 const drawBridges = (
   ctx: CanvasRenderingContext2D,
   bridges: Bridge[],
-  laneCount: number,
   canvas: HTMLCanvasElement,
-  runners: Runner[],
+  leaderY: number,
+  tailY: number,
 ) => {
-  if (runners.length === 0) return;
+  bridges.forEach((b) => {
+    const dist = b.floor - leaderY;
+    if (dist > 1000 || b.floor < tailY - 200) return;
 
-  const leaderY = Math.max(...runners.map((r) => r.y));
-  const tailY = Math.min(...runners.map((r) => r.y));
-
-  bridges.forEach((bridge) => {
-    // ★ 이미 사용된 다리는 렌더링하지 않음
-    if (bridge.isUsed) return;
-
-    // 시야 범위 밖의 다리 최적화
-    const distToLeader = bridge.floor - leaderY;
-    if (distToLeader > 1000 || bridge.floor < tailY - 200) return;
-
-    // 페이드 인 연출 (앞에서 나타나는 효과)
-    let alpha = 1;
-    if (distToLeader > 0) {
-      alpha = 1 - distToLeader / 1000;
-    }
-    alpha = Math.max(0, Math.min(1, alpha));
-
-    const startPos = getTrackPos(
-      bridge.floor,
-      bridge.fromPlayer,
-      laneCount,
-      canvas,
-    );
-    const endPos = getTrackPos(
-      bridge.floor,
-      bridge.fromPlayer + 1,
-      laneCount,
-      canvas,
-    );
+    const alpha = Math.max(0, Math.min(1, 1 - (dist - 200) / 600));
+    const p1 = getTrackPos(b.floor, b.fromPlayer, canvas);
+    const p2 = getTrackPos(b.floor, b.fromPlayer + 1, canvas);
 
     ctx.save();
     ctx.globalAlpha = alpha;
-    ctx.strokeStyle = bridge.color || "#A226FF";
-    ctx.lineWidth = 3;
-    ctx.shadowBlur = 10 * alpha;
-    ctx.shadowColor = ctx.strokeStyle;
-
+    ctx.strokeStyle = b.color;
+    ctx.lineWidth = 4;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = b.color;
     ctx.beginPath();
-    ctx.moveTo(startPos.x, startPos.y);
-    ctx.lineTo(endPos.x, endPos.y);
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
     ctx.stroke();
     ctx.restore();
   });
