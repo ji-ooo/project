@@ -1,16 +1,38 @@
+import { TRACK_SETTING } from "../../../pages/glitchRace/components/RunnerCanvas";
 import type { Runner, Bridge } from "../types";
 
-export const updateVerticalRace = (runners: Runner[], bridges: Bridge[]) => {
+export const updateVerticalRace = (
+  runners: Runner[],
+  bridges: Bridge[],
+  canvasWidth: number,
+) => {
+  const { BASE_RADIUS, LANE_WIDTH, STRAIGHT_RATIO } = TRACK_SETTING;
+
+  const STRAIGHT_LEN = canvasWidth * STRAIGHT_RATIO;
+  const SEMI_CIRCLE_LEN = Math.PI * BASE_RADIUS;
+  const TOTAL_LAP = STRAIGHT_LEN * 2 + SEMI_CIRCLE_LEN * 2;
+
   return runners.map((runner) => {
     const currentVisualLane = runner.visualLane ?? runner.lane;
     let nextLane = runner.lane;
     let nextY = runner.y;
     let nextLastBridgeId = runner.lastBridgeId;
 
+    const d = runner.y % TOTAL_LAP;
+    const isCurve =
+      (d >= STRAIGHT_LEN && d < STRAIGHT_LEN + SEMI_CIRCLE_LEN) ||
+      d >= STRAIGHT_LEN * 2 + SEMI_CIRCLE_LEN;
+
+    let effectiveSpeed = runner.speed;
+    if (isCurve) {
+      const myRadius = BASE_RADIUS + currentVisualLane * LANE_WIDTH;
+      effectiveSpeed *= BASE_RADIUS / myRadius;
+    }
+
     const isMovingHorizontally = Math.abs(nextLane - currentVisualLane) > 0.05;
 
     if (!isMovingHorizontally) {
-      const nextYExpected = runner.y + runner.speed;
+      const nextYExpected = runner.y + effectiveSpeed;
 
       const hitBridge = bridges.find((b) => {
         return (
@@ -26,7 +48,6 @@ export const updateVerticalRace = (runners: Runner[], bridges: Bridge[]) => {
           runner.lane === hitBridge.fromPlayer
             ? hitBridge.fromPlayer + 1
             : hitBridge.fromPlayer;
-
         nextY = hitBridge.floor;
         runner.lastBridgeId = hitBridge.id;
       } else {

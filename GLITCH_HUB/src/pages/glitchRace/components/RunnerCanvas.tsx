@@ -76,9 +76,13 @@ const RunnerCanvas: React.FC<Props> = ({ players, isRunning }) => {
     let frameId: number;
 
     const render = () => {
-      if (isRunning && runnersRef.current.length > 0) {
+      if (isRunning && runnersRef.current.length > 0 && canvasRef.current) {
         // [물리 엔진]
-        const nextRunners = updateVerticalRace(runnersRef.current, bridges);
+        const nextRunners = updateVerticalRace(
+          runnersRef.current,
+          bridges,
+          canvasRef.current.width,
+        );
         runnersRef.current = nextRunners;
 
         // [카메라 & 줌 계산]
