@@ -9,8 +9,9 @@
 
   background-color: var(--sidebar-bg);
   border-right: 1px solid var(--border-color);
-
-  backdrop-filter: blur(10px);
+  opacity: 0.89;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
 
   display: flex;
   transition: left 0.3s ease;
@@ -161,6 +162,5 @@
 
   @media (max-width: 767px) {
     top: 5px;
-    background-color: white;
   }
 }

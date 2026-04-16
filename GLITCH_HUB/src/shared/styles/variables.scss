@@ -23,6 +23,11 @@
 
   --main-color: var(--neon-magenta);
 
+  --canvas-bg: rgba(255, 255, 255, 0.4);
+  --canvas-border: rgba(0, 0, 0, 0.1);
+  --track-color: rgba(0, 0, 0, 0.17);
+  --neon-primary: #00b894;
+
   --neon-font-color: #ffffff;
   --neon-background-color: var(--neon-magenta);
   --neon-border-color: var(--neon-magenta);
@@ -39,6 +44,11 @@
   --sub-font-color: #8b949e;
 
   --main-color: var(--neon-cyan);
+
+  --canvas-bg: rgba(13, 17, 23, 0.6);
+  --canvas-border: rgba(255, 255, 255, 0.1);
+  --track-color: rgba(255, 255, 255, 0.05);
+  --neon-primary: #00d2ff;
 
   --neon-font-color: #ffffff;
   --neon-border-color: var(--neon-cyan);

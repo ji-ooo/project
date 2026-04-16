@@ -1,7 +1,7 @@
 @use "@/shared/styles/variables" as *;
 
 .setupCard {
-  background: rgba(var(--background-rgb), 0.8);
+  background: color-mix(in srgb, var(--neon-border-color), transparent 95%);
   backdrop-filter: blur(10px);
 
   padding: 2.2rem;
@@ -14,7 +14,7 @@
 
   .glitchText {
     font-size: 2.5rem;
-    font-weight: 900;
+    font-weight: 700;
     color: var(--neon-font-color);
     text-align: center;
     text-shadow: var(--neon-shadow);
@@ -47,20 +47,21 @@
   gap: 2rem;
 
   .stepBtn {
-    width: 45px;
-    height: 45px;
+    width: 22px;
+    height: 22px;
     background: transparent;
     border: 2px solid var(--neon-border-color);
-    border-radius: 10px;
+    border-radius: 5px;
     color: var(--neon-border-color);
-    font-weight: 900;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
-    @include neon-theme-anim(1.5s, 3s);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 1px;
 
     @include button-interaction {
       background: var(--neon-border-color);
@@ -68,24 +69,6 @@
       box-shadow: 0 0 15px var(--neon-border-color);
       transform: translateY(-2px);
     }
-    // &:hover:not(:disabled) {
-    //   background: var(--neon-border-color);
-    //   color: #fff;
-    //   box-shadow: 0 0 15px var(--neon-border-color);
-    //   transform: translateY(-2px);
-    // }
-
-    // &:active:not(:disabled) {
-    //   transform: scale(0.95);
-    // }
-
-    // &:disabled {
-    //   opacity: 0.3;
-    //   cursor: not-allowed;
-    //   border-color: #666;
-    //   color: #666;
-    //   box-shadow: none;
-    // }
   }
 
   .countDisplay {
@@ -113,6 +96,29 @@
 }
 
 .nameList {
+  height: 110px;
+  overflow-y: scroll;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--track-color);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--neon-border-color);
+    border-radius: 10px;
+    box-shadow: 0 0 2px var(--neon-border-color);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-border-color);
+  }
+
   .nameInput {
     display: flex;
     align-items: center;
@@ -135,7 +141,7 @@
       padding: 5px;
       font-size: 1.1rem;
       outline: none;
-      width: 100%;
+      width: 80%;
       transition: var(--neon-transition);
 
       &::placeholder {
@@ -144,7 +150,15 @@
       }
 
       &:focus {
-        border-bottom-color: var(--neon);
+        @include shadow-inset-center();
+        background: color-mix(in srgb, var(--neon), transparent 90%);
+      }
+
+      @include button-interaction {
+        &:not(:focus) {
+          transform: scale(1.05);
+          border-bottom-color: var(--neon);
+        }
       }
     }
   }
@@ -166,7 +180,7 @@
   cursor: pointer;
   transition: var(--neon-transition);
 
-  &:hover {
+  @include button-interaction {
     background: var(--neon-border-color);
     color: #fff;
     box-shadow: 0 0 20px var(--neon-border-color);

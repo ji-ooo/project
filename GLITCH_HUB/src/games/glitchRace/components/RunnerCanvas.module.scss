@@ -1,0 +1,33 @@
+@use "@/shared/styles/variables" as *;
+
+.canvasContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  background: var(--canvas-bg);
+  border: 1px solid var(--canvas-border);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  border-radius: 12px;
+
+  box-shadow: var(--neon-shadow);
+
+  overflow: hidden;
+
+  transition:
+    background 0.3s ease,
+    border 0.3s ease;
+}
+
+.raceCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.glitchEffect {
+  @include shake(0.3s);
+  filter: hue-rotate(90deg);
+}

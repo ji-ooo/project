@@ -1,18 +1,10 @@
 import { useState } from "react";
+import { NEON_COLORS } from "../types";
 import styles from "./SetupForm.module.scss";
 
 interface Props {
   onStart: (players: any[]) => void;
 }
-
-const NEON_COLORS = [
-  "#00f3ff",
-  "#ff00de",
-  "#39ff14",
-  "#ffea00",
-  "#ff4d00",
-  "#bd00ff",
-];
 
 const SetupForm = ({ onStart }: Props) => {
   const [count, setCount] = useState(2);
@@ -27,12 +19,6 @@ const SetupForm = ({ onStart }: Props) => {
     );
   };
 
-  const handleNameChange = (index: number, val: string) => {
-    const newNames = [...names];
-    newNames[index] = val;
-    setNames(newNames);
-  };
-
   const handleSubmit = () => {
     const players = names.map((name, i) => ({
       id: i,
@@ -44,14 +30,12 @@ const SetupForm = ({ onStart }: Props) => {
 
   const MIN = 2;
   const MAX = 6;
-  const percentage = ((count - MIN) / (MAX - MIN)) * 100;
 
   return (
     <div className={styles.setupCard}>
       <h1 className={styles.glitchText} data-text="GAME SETUP">
         인원 설정
       </h1>
-
       <div className={styles.stepperContainer}>
         <div className={styles.stepperWrapper}>
           <button
@@ -71,7 +55,7 @@ const SetupForm = ({ onStart }: Props) => {
             onClick={() => handleCountChange(Math.min(count + 1, MAX))}
             disabled={count >= MAX}
           >
-            +
+            <span>+</span>
           </button>
         </div>
       </div>
@@ -85,9 +69,13 @@ const SetupForm = ({ onStart }: Props) => {
           >
             <span className={styles.dot} />
             <input
-              placeholder={`PLAYER ${i + 1} NAME`}
               value={name}
-              onChange={(e) => handleNameChange(i, e.target.value)}
+              placeholder={`PLAYER ${i + 1} NAME`}
+              onChange={(e) => {
+                const n = [...names];
+                n[i] = e.target.value;
+                setNames(n);
+              }}
             />
           </div>
         ))}

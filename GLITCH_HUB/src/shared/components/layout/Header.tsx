@@ -19,10 +19,11 @@ function Header() {
 
   return (
     <div className={styles.header}>
+      <div className={`${styles.shift} ${isOpen ? styles.shiftOpen : ""}`} />
       <img
         src={logo}
         alt="Logo"
-        className={`${styles.logo} ${isOpen ? styles.logoShift : ""}`}
+        className={styles.logo}
         onClick={() => navigate("/")}
       />
       <div className={styles.pageTitle}>{currentPageTitle}</div>

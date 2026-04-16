@@ -1,0 +1,114 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  backdrop-filter: blur(8px);
+}
+
+.container {
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.title {
+  font-size: 1.2rem;
+  color: #a226ff;
+  letter-spacing: 4px;
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(162, 38, 255, 0.8);
+  animation: pulse 1.5s infinite;
+}
+
+.slotBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid currentColor; // 인라인 스타일로 넘겨준 p.color 적용
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 1.4rem;
+  box-shadow: inset 0 0 15px currentColor;
+  transition: all 0.1s ease;
+
+  // 셔플 중일 때 미세하게 흔들리는 효과
+  &:not(.isDone) {
+    animation: jitter 0.2s infinite;
+  }
+
+  .laneIdx {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    letter-spacing: 1px;
+  }
+
+  .name {
+    text-transform: uppercase;
+    filter: drop-shadow(0 0 5px currentColor);
+  }
+}
+
+.fixed {
+  font-size: 1.5rem;
+  color: #00f2ff;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px #00f2ff;
+  animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+// 애니메이션 정의
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes jitter {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(1px, -1px);
+  }
+  50% {
+    transform: translate(-1px, 1px);
+  }
+  75% {
+    transform: translate(1px, 1px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
