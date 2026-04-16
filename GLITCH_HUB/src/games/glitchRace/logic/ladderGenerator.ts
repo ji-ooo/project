@@ -2,8 +2,8 @@ import { NEON_BRIDGE_COLORS, type Bridge } from "../types";
 
 export const RACE_CONFIG = {
   WARMUP_TIME: 3000,
-  BASE_SPEED: 5, // 아래로 내려가는 속도
-  SAFE_ZONE_HEIGHT: 500, // 3초간 내려가는 거리
+  BASE_SPEED: 4, // 아래로 내려가는 속도
+  LAP_DISTANCE: 2500,
 };
 
 export const generateLadders = (

@@ -1,3 +1,5 @@
+@use "@/shared/styles/variables" as *;
+
 .canvasContainer {
   position: relative;
   width: 100%;
@@ -23,4 +25,9 @@
   height: 100%;
   display: block;
   image-rendering: pixelated;
+}
+
+.glitchEffect {
+  @include shake(0.3s);
+  filter: hue-rotate(90deg);
 }
