@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NEON_COLORS } from "../../../games/glitchRace/types";
+import { NEON_COLORS } from "../types";
 import styles from "./SetupForm.module.scss";
 
 interface Props {

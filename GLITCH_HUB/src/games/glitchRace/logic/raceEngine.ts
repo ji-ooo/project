@@ -1,4 +1,4 @@
-import { TRACK_SETTING } from "../../../pages/glitchRace/components/RunnerCanvas";
+import { TRACK_SETTING } from "../components/RunnerCanvas";
 import type { Runner, Bridge } from "../types";
 
 export const updateVerticalRace = (

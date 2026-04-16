@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { Player, Runner, Bridge } from "../../../games/glitchRace/types";
-import {
-  generateLadders,
-  RACE_CONFIG,
-} from "../../../games/glitchRace/logic/ladderGenerator";
-import { updateVerticalRace } from "../../../games/glitchRace/logic/raceEngine";
+import type { Player, Runner, Bridge } from "../types";
+import { generateLadders, RACE_CONFIG } from "../logic/ladderGenerator";
+import { updateVerticalRace } from "../logic/raceEngine";
 import styles from "./RunnerCanvas.module.scss";
 
 interface Props {

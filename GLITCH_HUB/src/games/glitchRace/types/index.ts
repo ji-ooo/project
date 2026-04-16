@@ -41,4 +41,4 @@ export interface Runner {
   lastBridgeId: string | null;
 }
 
-export type GameState = "SETUP" | "PLAYING" | "FINISHED";
+export type GameState = "SETUP" | "READY" | "PLAYING" | "FINISHED";
